@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN"
+  "http://www.seasar.org/dtd/components24.dtd">
+<components namespace="s2rest">
+
+<!--
+  <component name="customizer" class="org.seasar.rest.register.Jsr311Customizer">
+  </component>
+-->
+  <component name="componentRegister" class="org.seasar.rest.register.impl.Jsr311ComponentRegisterImpl">
+  </component>
+  <component name="routerRegistryForTesting" class="org.seasar.rest.testing.RouterRegistryForTesting">
+  </component>
+
+
+  <component
+    name="seasarResource"
+    class="org.seasar.rest.resource.SeasarResource"
+    instance="prototype"
+  >
+    <property name="getHandler">getHandler</property>
+    <property name="postHandler">postHandler</property>
+    <property name="putHandler">putHandler</property>
+    <property name="deleteHandler">deleteHandler</property>
+    <property name="seasarRepresentation">seasarRepresentation</property>
+
+  </component>
+  
+  <component
+    name="getHandler"
+    class="org.seasar.rest.method.impl.GetHandlerImpl"
+    instance="prototype"
+  >
+  </component>
+
+  <component
+    name="postHandler"
+    class="org.seasar.rest.method.impl.PostHandlerImpl"
+    instance="prototype"
+  >
+  </component>
+
+  <component
+    name="putHandler"
+    class="org.seasar.rest.method.impl.PutHandlerImpl"
+    instance="prototype"
+  >
+  </component>
+
+  <component
+    name="deleteHandler"
+    class="org.seasar.rest.method.impl.DeleteHandlerImpl"
+    instance="prototype"
+  >
+  </component>
+
+  <component
+    name="uriParser"
+    class="org.seasar.rest.uri.impl.UriParserImpl"
+  >
+  </component>
+
+  <component
+    name="annotationArgsResolver"
+    class="org.seasar.rest.uri.impl.Jsr311UriParamResolver"
+  >
+  </component>
+
+  <component
+    name="requestToPropertyMapper"
+    class="org.seasar.rest.uri.impl.Jsr311RequestToPropertyMapper"
+  >
+  </component>
+
+  <component
+    name="restletContext"
+    class="org.seasar.rest.context.RestletContext"
+  >
+  </component>
+
+  <component
+    name="seasarRepresentation"
+    class="org.seasar.rest.representation.impl.SeasarRepresentationImpl"
+  >
+  </component>
+
+  <component class="org.seasar.extension.component.impl.ComponentInvokerImpl">
+  </component>
+
+  <component
+    name="text/plain"
+    class="org.seasar.rest.testing.ToStringRepresentation"
+  >
+  </component>
+
+</components>
