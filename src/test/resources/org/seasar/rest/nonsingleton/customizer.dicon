@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN" 
+  "http://www.seasar.org/dtd/components24.dtd">
+<components>
+  <include path="org/seasar/rest/s2-rest-customizer-test.dicon"/>
+
+  <component name="daoCustomizer" class="org.seasar.framework.container.customizer.CustomizerChain">
+    <initMethod name="addCustomizer"><arg>s2RestCustomizer</arg></initMethod>
+    <initMethod name="addCustomizer"><arg>mockCustomizer</arg></initMethod>
+  </component>
+  
+  <component name="serviceCustomizer" class="org.seasar.framework.container.customizer.CustomizerChain">
+    <initMethod name="addCustomizer"><arg>s2RestCustomizer</arg></initMethod>
+    <initMethod name="addCustomizer"><arg>mockCustomizer</arg></initMethod>
+  </component>
+
+  <component name="mockCustomizer" class="org.seasar.framework.container.customizer.AspectCustomizer">
+    <initMethod name="addInterceptorName"><arg>"mock"</arg></initMethod>
+  </component>
+
+  <component
+    name="mock"
+    class="org.seasar.framework.aop.interceptors.MockInterceptor">
+      <initMethod name="setReturnValue">
+        <arg>"getAll"</arg>
+        <arg>{}</arg>
+      </initMethod>
+      <initMethod name="setReturnValue">
+        <arg>"findById"</arg>
+        <arg>sample</arg>
+      </initMethod>
+      <initMethod name="setReturnValue">
+        <arg>"getById"</arg>
+        <arg>sample</arg>
+      </initMethod>
+  </component>
+
+  <component
+    name="sample"
+    class="com.example.entity.Employee">
+      <property name="employeeId">100</property>
+      <property name="employeeName">"Hoge"</property>
+  </component>
+
+</components>

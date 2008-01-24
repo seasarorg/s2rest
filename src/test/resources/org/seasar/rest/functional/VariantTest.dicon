@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN" 
+  "http://www.seasar.org/dtd/components24.dtd">
+<components>
+  <include path="org/seasar/rest/s2-rest-test.dicon"/>
+
+  <component
+    class="org.seasar.framework.container.autoregister.FileSystemComponentAutoRegister">
+    <property name="instanceDef">
+      @org.seasar.framework.container.deployer.InstanceDefFactory@SINGLETON
+    </property>
+    <property name="autoNaming">
+      <component class="org.seasar.framework.container.autoregister.DefaultAutoNaming"/>
+    </property>
+    <initMethod name="addClassPattern">
+      <arg>"com.example.dao"</arg>
+      <arg>".*Dao"</arg>
+    </initMethod>
+  </component>
+
+  <component class="org.seasar.rest.register.S2RestAutoRegister">
+    <initMethod name="addClassPattern">
+      <arg>"com.example.dao"</arg>
+      <arg>".*Dao"</arg>
+    </initMethod>
+  </component>
+
+  <component class="org.seasar.framework.container.autoregister.AspectAutoRegister">
+    <property name="interceptor">mock</property>
+    <initMethod name="addClassPattern">
+      <arg>"com.example.dao"</arg>
+      <arg>".*Dao"</arg>
+    </initMethod>
+  </component>
+
+  <component
+    name="mock"
+    class="org.seasar.framework.aop.interceptors.MockInterceptor">
+      <initMethod name="setReturnValue">
+        <arg>"getAll"</arg>
+        <arg>{}</arg>
+      </initMethod>
+      <initMethod name="setReturnValue">
+        <arg>"findById"</arg>
+        <arg>sample</arg>
+      </initMethod>
+      <initMethod name="setReturnValue">
+        <arg>"getById"</arg>
+        <arg>sample</arg>
+      </initMethod>
+  </component>
+
+  <component
+    name="sample"
+    class="com.example.entity.Employee">
+      <property name="employeeId">100</property>
+      <property name="employeeName">"Hoge"</property>
+  </component>
+
+</components>

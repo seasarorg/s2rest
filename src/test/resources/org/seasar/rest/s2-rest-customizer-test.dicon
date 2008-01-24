@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN"
+  "http://www.seasar.org/dtd/components24.dtd">
+<components namespace="s2rest">
+  <include path="org/seasar/rest/s2-rest-test.dicon"/>
+
+  <component name="s2RestCustomizer" class="org.seasar.rest.register.Jsr311Customizer">
+  </component>
+<!--
+  <component name="componentRegister" class="org.seasar.rest.register.impl.Jsr311ComponentRegisterImpl">
+  </component>
+  <component name="routerRegistryForTesting" class="org.seasar.rest.testing.RouterRegistryForTesting">
+  </component>
+-->
+
+</components>
