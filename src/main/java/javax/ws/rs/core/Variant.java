@@ -27,7 +27,6 @@ import javax.ws.rs.ext.RuntimeDelegate;
  */
 public class Variant {
     
-    private String charset;
     private String language;
     private MediaType mediaType;
     private String encoding;
@@ -36,24 +35,14 @@ public class Variant {
      * Create a new instance of Variant
      * @param mediaType the media type of the variant - may be null
      * @param language the language of the variant - may be null
-     * @param charset the character set of the variant - may be null
      * @param encoding the content encoding of the variant - may be null
      */
-    public Variant(MediaType mediaType, String language, String charset, String encoding) {
-        this.charset = charset;
+    public Variant(MediaType mediaType, String language, String encoding) {
         this.encoding = encoding;
         this.language = language;
         this.mediaType = mediaType;
     }
     
-    /**
-     * Get the character set of the variant
-     * @return the character set or null if none set
-     */
-    public String getCharset() {
-        return charset;
-    }
-
     /**
      * Get the language of the variant
      * @return the language or null if none set
@@ -84,6 +73,12 @@ public class Variant {
     public static abstract class VariantListBuilder {
         
         /**
+         * Protected constructor, use the static <code>newInstance</code>
+         * method to obtain an instance.
+         */
+        protected VariantListBuilder() {}
+        
+        /**
          * Create a new builder instance.
          * @return a new Builder
          */
@@ -107,19 +102,12 @@ public class Variant {
          * then a variant will be generated for each possible combination. E.g.
          * in the following <code>list</code> would have four members:
          * <p><pre>List<Variant> list = VariantListBuilder.newInstance().languages("en","fr")
-         *   .charsets("ISO-8859-1", "UTF-8").add().build()</pre>
+         *   .encodings("zip", "identity").add().build()</pre>
          * 
          * 
          * @return the updated builder
          */
         public abstract VariantListBuilder add();
-        
-        /**
-         * Set the character set[s] for this variant.
-         * @param charsets the available character sets
-         * @return the updated builder
-         */
-        public abstract VariantListBuilder charsets(String... charsets);
         
         /**
          * Set the language[s] for this variant.
@@ -137,7 +125,9 @@ public class Variant {
         
         /**
          * Set the media type[s] for this variant.
-         * @param mediaTypes the available mediaTypes
+         * @param mediaTypes the available mediaTypes. If specific charsets
+         * are supported they should be included as parameters of the respective
+         * media type.
          * @return the updated builder
          */
         public abstract VariantListBuilder mediaTypes(MediaType... mediaTypes);

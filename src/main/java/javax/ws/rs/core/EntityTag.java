@@ -19,6 +19,7 @@
 
 package javax.ws.rs.core;
 
+import java.text.ParseException;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 

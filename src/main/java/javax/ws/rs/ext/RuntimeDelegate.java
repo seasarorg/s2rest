@@ -21,11 +21,10 @@ package javax.ws.rs.ext;
 
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and
@@ -78,6 +77,7 @@ public abstract class RuntimeDelegate {
      * </li>
      * </ul>
      *
+     * @return an instance of RuntimeDelegate
      */
     public static RuntimeDelegate getInstance() {
         RuntimeDelegate rd = rdr.get();
@@ -133,8 +133,10 @@ public abstract class RuntimeDelegate {
     
     /**
      * Obtain an instance of a HeaderDelegate for the supplied class. An 
-     * implementation is required to support the following classes:
+     * implementation is required to support the following values for type:
      * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
+     * @param type the class of the header
+     * @return an instance of HeaderDelegate for the supplied type
      */
     public abstract <T> HeaderDelegate<T> createHeaderDelegate(Class<T> type);
 
@@ -142,6 +144,7 @@ public abstract class RuntimeDelegate {
      * Defines the contract for a delegate that is responsible for
      * converting between the String form of a HTTP header and 
      * the corresponding JAX-RS type <code>T</code>.
+     * @param T a JAX-RS type that corresponds to the value of a HTTP header
      */
     public static interface HeaderDelegate<T> { 
         /**
