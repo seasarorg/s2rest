@@ -30,6 +30,8 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * class can extend this class directly or can use one the static 
  * methods to create an instance using a ResponseBuilder.
  * 
+ * Several methods have parameters of type URI, {@link UriBuilder} provides
+ * convenient methods to create such values as does <code>URI.create()</code>.
  * 
  * @see Response.ResponseBuilder
  */
@@ -142,9 +144,12 @@ public abstract class Response {
     }
 
     /**
-     * Create a new ResponseBuilder for a created resource.
+     * Create a new ResponseBuilder for a created resource, set the location
+     * header using the supplied value.
      * 
-     * @param location the URI of the new resource
+     * @param location the URI of the new resource. If a relative URI is 
+     * supplied it will be converted into an absolute URI by resolving it
+     * relative to the request URI (see {@link UriInfo#getRequestUri}).
      * @return a new ResponseBuilder
      */
     public static ResponseBuilder created(URI location) {
@@ -197,9 +202,26 @@ public abstract class Response {
     }
 
     /**
+     * Create a new ResponseBuilder for a redirection.
+     * 
+     * @param location the redirection URI. If a relative URI is 
+     * supplied it will be converted into an absolute URI by resolving it
+     * relative to the base URI of the application (see 
+     * {@link UriInfo#getBaseUri}).
+     * @return a new ResponseBuilder
+     */
+    public static ResponseBuilder seeOther(URI location) {
+        ResponseBuilder b = status(303).location(location);
+        return b;
+    }
+
+    /**
      * Create a new ResponseBuilder for a temporary redirection.
      * 
-     * @param location the redirection URI
+     * @param location the redirection URI. If a relative URI is 
+     * supplied it will be converted into an absolute URI by resolving it
+     * relative to the base URI of the application (see 
+     * {@link UriInfo#getBaseUri}).
      * @return a new ResponseBuilder
      */
     public static ResponseBuilder temporaryRedirect(URI location) {
@@ -227,12 +249,22 @@ public abstract class Response {
      * <pre>@POST
      * Response addWidget(...) {
      *   Widget w = ...
-     *   URI widgetId = ...
-     *   return Response.created(w, widgetId).build();
+     *   URI widgetId = UriBuilder.fromResource(Widget.class)...
+     *   return Response.created(widgetId).build();
      * }</pre>
+     * 
+     * Several methods have parameters of type URI, {@link UriBuilder} provides
+     * convenient methods to create such values as does <code>URI.create()</code>.
+     * 
      */
     public static abstract class ResponseBuilder {
 
+        /**
+         * Protected constructor, use one of the static methods of
+         * <code>Response</code> to obtain an instance.
+         */
+        protected ResponseBuilder() {}
+        
         /**
          * Create a new builder instance.
          * 
@@ -270,7 +302,7 @@ public abstract class Response {
         public abstract ResponseBuilder entity(Object entity);
         
         /**
-         * Set the type on the ResponseBuilder.
+         * Set the response media type on the ResponseBuilder.
          * 
          * 
          * @param type the media type of the response entity
@@ -279,11 +311,11 @@ public abstract class Response {
         public abstract ResponseBuilder type(MediaType type);
         
         /**
-         * Set the type on the ResponseBuilder.
+         * Set the response media type on the ResponseBuilder.
          * 
-         * 
-         * @param type  the media type of the response entity
+         * @param type the media type of the response entity
          * @return the updated ResponseBuilder
+         * @throws IllegalArgumentException if type cannot be parsed
          */
         public abstract ResponseBuilder type(String type);
         
@@ -316,8 +348,10 @@ public abstract class Response {
         /**
          * Set the location on the ResponseBuilder.
          * 
-         * 
-         * @param location the location
+         * @param location the location. If a relative URI is 
+         * supplied it will be converted into an absolute URI by resolving it
+         * relative to the base URI of the application (see 
+         * {@link UriInfo#getBaseUri}).
          * @return the updated ResponseBuilder
          */
         public abstract ResponseBuilder location(URI location);
@@ -325,14 +359,14 @@ public abstract class Response {
         /**
          * Set the content location on the ResponseBuilder.
          * 
-         * 
-         * @param location the content location
+         * @param location the content location. Relative or absolute URIs
+         * may be used for the value of content location.
          * @return the updated ResponseBuilder
          */
         public abstract ResponseBuilder contentLocation(URI location);
         
         /**
-         * Set the entity tag on the ResponseBuilder.
+         * Set an entity tag on the ResponseBuilder.
          * 
          * 
          * @param tag the entity tag
@@ -341,10 +375,11 @@ public abstract class Response {
         public abstract ResponseBuilder tag(EntityTag tag);
         
         /**
-         * Set the entity tag on the ResponseBuilder.
+         * Set a strong entity tag on the ResponseBuilder.
          * 
          * 
-         * @param tag the entity tag
+         * @param tag the string content of a strong entity tag. The JAX-RS
+         * runtime will quote the supplied value when creating the header.
          * @return the updated ResponseBuilder
          */
         public abstract ResponseBuilder tag(String tag);
@@ -378,12 +413,12 @@ public abstract class Response {
         public abstract ResponseBuilder header(String name, Object value);
         
         /**
-         * Set a new cookie on the ResponseBuilder.
+         * Add cookies to the ResponseBuilder. If more than one cookie with
+         * the same is supplied, later ones overwrite earlier ones.
          * 
-         * 
-         * @param cookie the new cookie that will accompany the response.
+         * @param cookies new cookies that will accompany the response.
          * @return the updated ResponseBuilder
          */
-        public abstract ResponseBuilder cookie(NewCookie cookie);
+        public abstract ResponseBuilder cookie(NewCookie... cookies);
     }
 }
