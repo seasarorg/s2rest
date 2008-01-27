@@ -7,6 +7,10 @@ import org.seasar.framework.container.factory.PathResolver;
 import org.seasar.framework.container.factory.S2ContainerFactory.DefaultConfigurator;
 import org.seasar.framework.container.factory.S2ContainerFactory.Provider;
 
+/**
+ * custom Configurator for ease of testing
+ * @author t-wada
+ */
 public class ConfiguratorForTesting extends DefaultConfigurator {
     private String coolDeployDiconPath = "cooldeploy-autoregister.dicon";
     

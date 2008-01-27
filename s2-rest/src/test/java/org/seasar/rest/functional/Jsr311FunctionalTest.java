@@ -36,16 +36,11 @@ public class Jsr311FunctionalTest {
         RestfulSeasarApplication app = new RestfulSeasarApplication(new Context());
         RouterRegistryForTesting.setRouterForTesting((Router) app.getRoot());
         
-        log.debug("############# 0 ############");
         S2ContainerFactory.destroy();
         S2ContainerFactory.configure("org/seasar/rest/null_s2container.dicon");
-        log.debug("############# 1 ############");
         container = S2ContainerFactory.create("org/seasar/rest/functional/VariantTest.dicon");
-        log.debug("############# 2 ############");
         container.init();
-        log.debug("############# 3 ############");
         SingletonS2ContainerFactory.setContainer(container);
-        log.debug("############# 4 ############");
         
         server = new Server(Protocol.HTTP, 8182, app);
         server.start();

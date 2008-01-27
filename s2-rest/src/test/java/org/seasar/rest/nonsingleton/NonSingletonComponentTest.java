@@ -62,7 +62,7 @@ public class NonSingletonComponentTest {
     }
     
     
-    @Ignore("pending in case of huge 0.6 changes")
+    @Ignore("pending since 0.6 huge changes")
     @Test
     public void routes() throws Exception {
         assertFalse(routes.isEmpty());
@@ -75,7 +75,7 @@ public class NonSingletonComponentTest {
     }
     
 
-    @Ignore("pending in case of huge 0.6 changes")
+    @Ignore("pending since 0.6 huge changes")
     @Test
     public void uriToPropertyMapping() throws Exception {
         SeasarResourceFinder srf = (SeasarResourceFinder) routes.get("/empLogic/{employeeId}");
