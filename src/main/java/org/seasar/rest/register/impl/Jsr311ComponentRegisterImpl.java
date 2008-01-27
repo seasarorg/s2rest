@@ -42,17 +42,14 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
         Map<String, SeasarResourceFinder> uriMapping = new HashMap<String, SeasarResourceFinder>();
         
         Class<?> componentClass = componentDef.getComponentClass();
-        Path classUriTemplate = componentClass.getAnnotation(Path.class);
-        
-        String classUriPattern = null;
-        if(classUriTemplate != null) {
-            classUriPattern = "/" + classUriTemplate.value();
-            log.info("classUriPattern is [" + classUriPattern + "]");
-        } else {
-            classUriPattern = "";
-        }
+        String classUriPattern = resolveClassUriPatternFrom(componentClass);
         introduce(componentDef, uriMapping, classUriPattern);
         
+        attachToRouter(uriMapping, componentClass);
+    }
+
+    private void attachToRouter(Map<String, SeasarResourceFinder> uriMapping,
+            Class<?> componentClass) {
         Router router = this.routerRegistry.getRouter();
         for (Iterator<String> iter = uriMapping.keySet().iterator(); iter.hasNext();) {
             String uriPattern = iter.next();
@@ -66,6 +63,18 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
             
             registerVariableHintTo(route, finder);
         }
+    }
+
+    private String resolveClassUriPatternFrom(Class<?> componentClass) {
+        Path classUriTemplate = componentClass.getAnnotation(Path.class);
+        String classUriPattern = null;
+        if(classUriTemplate != null) {
+            classUriPattern = "/" + classUriTemplate.value();
+            log.info("classUriPattern is [" + classUriPattern + "]");
+        } else {
+            classUriPattern = "";
+        }
+        return classUriPattern;
     }
 
     private void registerVariableHintTo(Route route, SeasarResourceFinder finder) {
@@ -165,7 +174,7 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
     }
     
     private String getHttpMethodStringFrom(Method method) {
-        //XXX what happens if multiple annotations present for one method?
+        //XXX what happens if multiple annotations exist for one method?
         
         if(method.isAnnotationPresent(GET.class)) {
             return "GET";
