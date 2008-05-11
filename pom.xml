@@ -8,7 +8,7 @@
   <name>s2-rest</name>
 
   <properties>
-    <restlet_version>1.0.6</restlet_version>
+    <restlet_version>1.1-M3</restlet_version>
     <s2container_version>2.4.17</s2container_version>
   </properties>
 
@@ -82,6 +82,14 @@
     <dependency>
       <groupId>com.noelios.restlet</groupId>
       <artifactId>com.noelios.restlet.ext.jetty</artifactId>
+      <version>${restlet_version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- for Reference use -->
+    <dependency>
+      <groupId>com.noelios.restlet</groupId>
+      <artifactId>org.restlet.ext.jaxrs</artifactId>
       <version>${restlet_version}</version>
       <scope>test</scope>
     </dependency>
