@@ -2,7 +2,7 @@
 <!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN"
   "http://www.seasar.org/dtd/components24.dtd">
 <components namespace="s2restcustomizer">
-  <include path="org/seasar/rest/s2-rest.dicon"/>
+  <include path="s2-rest.dicon"/>
 
   <component name="s2RestCustomizer" class="org.seasar.rest.register.Jsr311Customizer">
   </component>
