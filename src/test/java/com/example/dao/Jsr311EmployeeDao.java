@@ -18,7 +18,7 @@ import com.example.entity.Employee;
 
 @Path("employee")
 @ConsumeMime( { "application/json", "application/x-www-form-urlencoded" })
-@ProduceMime( { "application/json", "text/xml" })
+@ProduceMime( { "application/json", "text/xml", "text/plain" })
 @S2Dao(bean = Employee.class)
 public interface Jsr311EmployeeDao {
 

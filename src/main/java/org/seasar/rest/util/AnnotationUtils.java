@@ -143,6 +143,44 @@ public class AnnotationUtils {
 		return results;
 	}
 
+	public static Annotation[][] getParameterAnnotations(Method method) {
+		int numParameters = method.getParameterTypes().length;
+
+		Annotation[][] result = method.getParameterAnnotations();
+
+		if (!isEmpty(result))
+			return result;
+
+		Class<?> clazz = method.getDeclaringClass();
+		for (Class<?> clazzz : getInterfaces(clazz)) {
+			Method method1;
+			try {
+				method1 = clazzz.getMethod(method.getName(), method
+						.getParameterTypes());
+				result = method1.getParameterAnnotations();
+
+				if (!isEmpty(result))
+					return result;
+
+			} catch (Exception e) {
+				// そんなメソッドないよ
+			}
+
+		}
+
+		return new Annotation[numParameters][0];
+
+	}
+
+	// TODO FIXME
+	private static boolean isEmpty(Object[][] matrix) {
+		int items = 0;
+		for (int i = 0; i < matrix.length; i++) {
+			items += matrix[i].length;
+		}
+		return (0 == items);
+	}
+
 	private static boolean isShadowed(Method method, List<Method> results) {
 		for (Method each : results) {
 			if (isShadowed(method, each))

@@ -126,7 +126,7 @@ public class Jsr311CustomizerTest {
 		SeasarResource sr = (SeasarResource) srf.findTarget(request, null);
 
 		List<Variant> variants = sr.getVariants();
-		assertThat(variants.size(), is(4));
+		assertThat(variants.size(), is(5));
 	}
 
 	@Test

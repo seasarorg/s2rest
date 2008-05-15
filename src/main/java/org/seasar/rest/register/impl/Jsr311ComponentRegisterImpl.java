@@ -16,8 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.util.Template;
@@ -100,9 +98,6 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 		List<Method> methods = AnnotationUtils.getAnnotatedMethods(componentDef
 				.getComponentClass(), PathParam.class);
 
-		log.debug(ToStringBuilder.reflectionToString(methods,
-				ToStringStyle.MULTI_LINE_STYLE));
-
 		if (methods.isEmpty()) {
 			log.debug("resource is stateless");
 			inspectEachHttpMethod(componentDef, uriMapping, classUriPattern,
@@ -176,7 +171,8 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 		log.debug("methodLevelProduceMime:"
 				+ method.getDeclaringClass().getSimpleName() + "#"
 				+ method.getName());
-		ProduceMime produceMime = method.getAnnotation(ProduceMime.class);
+		ProduceMime produceMime = AnnotationUtils.getMethodAnnotation(method,
+				ProduceMime.class);
 		if (produceMime != null) {
 			String[] mimeTypes = produceMime.value();
 			for (String mimeType : mimeTypes) {
@@ -187,7 +183,8 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 
 	private void methodLevelConsumeMime(Method method,
 			SeasarResourceFinder finder) {
-		ConsumeMime consumeMime = method.getAnnotation(ConsumeMime.class);
+		ConsumeMime consumeMime = AnnotationUtils.getMethodAnnotation(method,
+				ConsumeMime.class);
 		if (consumeMime != null) {
 			String[] mimeTypes = consumeMime.value();
 			for (String mimeType : mimeTypes) {
