@@ -21,54 +21,57 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 
-
 public class Jsr311FunctionalTest {
-    private static final Logger log = Logger.getLogger(Jsr311FunctionalTest.class);
-    WebConversation wc;
-    Server server;
-    S2Container container;
-    
-    @Before
-    public void setUp() throws Exception {
-        wc = new WebConversation();
-        wc.setExceptionsThrownOnErrorStatus(false);
-        
-        RestfulSeasarApplication app = new RestfulSeasarApplication(new Context());
-        RouterRegistryForTesting.setRouterForTesting((Router) app.getRoot());
-        
-        S2ContainerFactory.destroy();
-        S2ContainerFactory.configure("org/seasar/rest/null_s2container.dicon");
-        container = S2ContainerFactory.create("org/seasar/rest/functional/VariantTest.dicon");
-        container.init();
-        SingletonS2ContainerFactory.setContainer(container);
-        
-        server = new Server(Protocol.HTTP, 8182, app);
-        server.start();
-    }
-    
-    @After
-    public void tearDown() throws Exception {
-        RouterRegistryForTesting.setRouterForTesting(null);
-        SingletonS2ContainerFactory.setContainer(null);
-        if(container != null) {
-            container.destroy();
-        }
-        if (server != null && server.isStarted() && !server.isStopped()) {
-            server.stop();
-        }
-        SingletonS2ContainerFactory.destroy();
-    }
-    
-    @Test
-    public void chooseRepresentationByAcceptHeader() throws Exception {
-        GetMethodWebRequest req =
-            new GetMethodWebRequest("http://localhost:8182/employee/100");
-        req.setHeaderField("Accept", "text/plain");
-        
-        WebResponse resp = wc.getResource(req);
-        
-        assertThat(resp.getResponseCode(), is(200));
-        assertThat(resp.getText(), is("Employee[employeeId=100,employeeName=Hoge]"));
-    }
-    
+	private static final Logger log = Logger
+			.getLogger(Jsr311FunctionalTest.class);
+	WebConversation wc;
+	Server server;
+	S2Container container;
+
+	@Before
+	public void setUp() throws Exception {
+		wc = new WebConversation();
+		wc.setExceptionsThrownOnErrorStatus(false);
+
+		RestfulSeasarApplication app = new RestfulSeasarApplication(
+				new Context());
+		RouterRegistryForTesting.setRouterForTesting((Router) app.getRoot());
+
+		S2ContainerFactory.destroy();
+		S2ContainerFactory.configure("org/seasar/rest/null_s2container.dicon");
+		container = S2ContainerFactory
+				.create("org/seasar/rest/functional/VariantTest.dicon");
+		container.init();
+		SingletonS2ContainerFactory.setContainer(container);
+
+		server = new Server(Protocol.HTTP, 8182, app);
+		server.start();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		RouterRegistryForTesting.setRouterForTesting(null);
+		SingletonS2ContainerFactory.setContainer(null);
+		if (container != null) {
+			container.destroy();
+		}
+		if (server != null && server.isStarted() && !server.isStopped()) {
+			server.stop();
+		}
+		SingletonS2ContainerFactory.destroy();
+	}
+
+	@Test
+	public void chooseRepresentationByAcceptHeader() throws Exception {
+		GetMethodWebRequest req = new GetMethodWebRequest(
+				"http://localhost:8182/employee/100");
+		req.setHeaderField("Accept", "text/plain");
+
+		WebResponse resp = wc.getResource(req);
+
+		assertThat(resp.getResponseCode(), is(200));
+		assertThat(resp.getText(),
+				is("Employee[employeeId=100,employeeName=Hoge]"));
+	}
+
 }

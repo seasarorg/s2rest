@@ -88,7 +88,7 @@
 
     <!-- for Reference use -->
     <dependency>
-      <groupId>com.noelios.restlet</groupId>
+      <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.jaxrs</artifactId>
       <version>${restlet_version}</version>
       <scope>test</scope>
