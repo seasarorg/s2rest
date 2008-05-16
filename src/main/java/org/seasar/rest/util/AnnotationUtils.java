@@ -34,7 +34,8 @@ public class AnnotationUtils {
 		for (Class<?> eachClass : getSuperClasses(theClass)) {
 			Method[] methods = eachClass.getDeclaredMethods();
 			for (Method eachMethod : methods) {
-				T annotation = getMethodAnnotation(eachMethod, annotationClass);
+				T annotation = getMethodLevelAnnotation(eachMethod,
+						annotationClass);
 				if (annotation != null && !isShadowed(eachMethod, results)) {
 					results.add(eachMethod);
 				}
@@ -44,51 +45,20 @@ public class AnnotationUtils {
 		return results;
 	}
 
-	public static <T extends Annotation> T getMethodAnnotation(Method method,
-			Class<T> annotationClass) {
-		if (annotationClass == null)
-			throw new NullPointerException();
-
-		T annotation = (T) method.getAnnotation(annotationClass);
-
-		if (null != annotation)
-			return annotation;
-
-		Class<?> clazz = method.getDeclaringClass();
-		for (Class<?> clazzz : getInterfaces(clazz)) {
-			Method method1;
-			try {
-				method1 = clazzz.getMethod(method.getName(), method
-						.getParameterTypes());
-				annotation = (T) method1.getAnnotation(annotationClass);
-				if (null != annotation)
-					return annotation;
-
-			} catch (Exception e) {
-				// そんなメソッドないよ
-			}
-
-		}
-
-		return null;
-	}
-
-	public static <A extends Annotation> boolean isAnnotationPresent(
-			Method method, Class<A> annotationClass) {
-		return getMethodAnnotation(method, annotationClass) != null;
-	}
-
 	/**
-	 * クラスに指定されたアノテーションを継承を含んで取得する。 検索順は、クラス、スーパークラス、インタフェース
+	 * 指定された型の注釈が存在する場合は、指定された型の要素の注釈を返します。 <br />
+	 * 検索対象に全ての継承されたクラス、全ての実装されているインタフェースが含まれます。
 	 * 
 	 * @param <A>
 	 * @param theClass
 	 * @param annotationClass
 	 * @return
+	 * 
+	 * @see Class#getAnnotation(Class)
 	 */
-	public static <A extends Annotation> A getAnnotation(Class<?> theClass,
-			Class<A> annotationClass) {
-		if (annotationClass == null)
+	public static <A extends Annotation> A getClassLevelAnnotation(
+			Class<?> theClass, Class<A> annotationClass) {
+		if (null == annotationClass)
 			throw new NullPointerException();
 
 		A annotation = (A) theClass.getAnnotation(annotationClass);
@@ -105,6 +75,91 @@ public class AnnotationUtils {
 		return null;
 	}
 
+	/**
+	 * 指定された型の注釈が存在する場合は、指定された型の要素の注釈を返します。<br />
+	 * 検索対象に全ての実装されたインタフェースを含みます。
+	 * 
+	 * @param <A>
+	 * @param method
+	 * @param annotationClass
+	 * @return
+	 * 
+	 * @see Method#getAnnotation(Class)
+	 */
+	public static <A extends Annotation> A getMethodLevelAnnotation(
+			Method method, Class<A> annotationClass) {
+		if (null == annotationClass)
+			throw new NullPointerException();
+
+		A annotation = (A) method.getAnnotation(annotationClass);
+
+		if (null != annotation)
+			return annotation;
+
+		Class<?> declaringClass = method.getDeclaringClass();
+		for (Class<?> clazz : getInterfaces(declaringClass)) {
+			Method abstractMethod;
+			try {
+				abstractMethod = clazz.getMethod(method.getName(), method
+						.getParameterTypes());
+				annotation = (A) abstractMethod.getAnnotation(annotationClass);
+				if (null != annotation)
+					return annotation;
+			} catch (NoSuchMethodException e) {
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * この Method
+	 * オブジェクトにより表されたメソッドの仮パラメータの注釈を表す配列の配列を、宣言順に返します。基本となるメソッドがパラメータを含まない場合は、長さゼロの配列を返します。メソッドに
+	 * 1
+	 * つ以上のパラメータがある場合、注釈を含まないパラメータごとに長さゼロの入れ子の配列を返します。返された配列に含まれる注釈オブジェクトは直列化できます。このメソッドの呼び出し元は、返された配列を自由に変更できます。
+	 * この変更は、ほかの呼び出し元に返された配列に影響を及ぼしません。 <br />
+	 * 検索対象に継承しているインタフェースを含みます。
+	 * 
+	 * @param method
+	 * @return
+	 * 
+	 * @see Method#getParameterAnnotations()
+	 */
+	public static Annotation[][] getMethodLevelParameterAnnotations(
+			Method method) {
+		if (null == method)
+			throw new NullPointerException();
+
+		int numParameters = method.getParameterTypes().length;
+
+		Annotation[][] result = method.getParameterAnnotations();
+
+		// java.lang.reflect.Method#getParameterAnnotationsはnullを戻さないので、null検証しない。
+		if (!isArrayOfArraysEmpty(result))
+			return result;
+
+		Class<?> declaringClass = method.getDeclaringClass();
+		for (Class<?> clazz : getInterfaces(declaringClass)) {
+			Method abstractMmethod;
+			try {
+				abstractMmethod = clazz.getMethod(method.getName(), method
+						.getParameterTypes());
+				result = abstractMmethod.getParameterAnnotations();
+				if (!isArrayOfArraysEmpty(result))
+					return result;
+			} catch (NoSuchMethodException e) {
+			}
+		}
+
+		// see java.lang.reflect.Method#getParameterAnnotations
+		return new Annotation[numParameters][0];
+	}
+
+	/**
+	 * クラスに継承されてるクラスおよび実装されているインタフェースをリストで返します。
+	 * 
+	 * @param theClass
+	 * @return 自身を含む継承されているクラスの一意なリスト
+	 */
 	public static List<Class<?>> getInheritClasses(Class<?> theClass) {
 		Set<Class<?>> set = new LinkedHashSet<Class<?>>();
 		Class<?> current = theClass;
@@ -123,6 +178,12 @@ public class AnnotationUtils {
 		return results;
 	}
 
+	/**
+	 * java.lang.Objectを除くクラスが継承している全てのクラス(自クラスを含む)を返します。
+	 * 
+	 * @param theClass
+	 * @return all extended classes
+	 */
 	public static List<Class<?>> getSuperClasses(Class<?> theClass) {
 		ArrayList<Class<?>> results = new ArrayList<Class<?>>();
 		Class<?> current = theClass;
@@ -133,6 +194,13 @@ public class AnnotationUtils {
 		return results;
 	}
 
+	/**
+	 * クラスが実装している全てのインタフェースを返します。
+	 * 
+	 * @param theClass
+	 * @return
+	 */
+	// TODO 戻すクラスの重複をなくす
 	public static List<Class<?>> getInterfaces(Class<?> theClass) {
 		ArrayList<Class<?>> results = new ArrayList<Class<?>>();
 		Class<?>[] classes = theClass.getInterfaces();
@@ -143,40 +211,27 @@ public class AnnotationUtils {
 		return results;
 	}
 
-	public static Annotation[][] getParameterAnnotations(Method method) {
-		int numParameters = method.getParameterTypes().length;
-
-		Annotation[][] result = method.getParameterAnnotations();
-
-		if (!isEmpty(result))
-			return result;
-
-		Class<?> clazz = method.getDeclaringClass();
-		for (Class<?> clazzz : getInterfaces(clazz)) {
-			Method method1;
-			try {
-				method1 = clazzz.getMethod(method.getName(), method
-						.getParameterTypes());
-				result = method1.getParameterAnnotations();
-
-				if (!isEmpty(result))
-					return result;
-
-			} catch (Exception e) {
-				// そんなメソッドないよ
-			}
-
-		}
-
-		return new Annotation[numParameters][0];
-
+	/**
+	 * @see Method#getParameterAnnotations()
+	 */
+	public static <A extends Annotation> boolean isMethodLevelAnnotationPresent(
+			Method method, Class<A> annotationClass) {
+		return getMethodLevelAnnotation(method, annotationClass) != null;
 	}
 
-	// TODO FIXME
-	private static boolean isEmpty(Object[][] matrix) {
+	/**
+	 * 配列の配列が要素を持つかどうかを検証する。
+	 * <p>
+	 * 一つでも要素があればTrue、一つもなければfalse
+	 * </p>
+	 * 
+	 * @param arrayOfArrays
+	 * @return
+	 */
+	private static boolean isArrayOfArraysEmpty(Object[][] arrayOfArrays) {
 		int items = 0;
-		for (int i = 0; i < matrix.length; i++) {
-			items += matrix[i].length;
+		for (int i = 0; i < arrayOfArrays.length; i++) {
+			items += arrayOfArrays[i].length;
 		}
 		return (0 == items);
 	}
@@ -206,6 +261,7 @@ public class AnnotationUtils {
 		if (null == theClass)
 			throw new NullPointerException();
 
+		// TODO もっといい方法があったとおもう・・・
 		return theClass.getName().equals("java.lang.Object");
 	}
 }

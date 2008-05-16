@@ -15,7 +15,7 @@ public class Jsr311UriParamResolver implements ArgumentResolver {
 	public String[] argumentNamesFor(Method method) {
 		List<String> names = new ArrayList<String>();
 		Annotation[][] parameterAnnotations = AnnotationUtils
-				.getParameterAnnotations(method);
+				.getMethodLevelParameterAnnotations(method);
 		for (Annotation[] annotations : parameterAnnotations) {
 			inspectParam(names, annotations);
 		}

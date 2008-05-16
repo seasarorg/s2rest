@@ -12,20 +12,22 @@ import org.seasar.rest.uri.RequestToPropertyMapper;
 import org.seasar.rest.util.AnnotationUtils;
 
 public class Jsr311RequestToPropertyMapper implements RequestToPropertyMapper {
-    
-    public void mapAll(Request request, Object obj, Class<?> clazz) {
-        Map<String, Object> attributes = request.getAttributes();
-        
-        //TODO QueryParam,MatrixParam,HeaderParam
-        List<Method> methods = AnnotationUtils.getAnnotatedMethods(clazz, PathParam.class);
-        
-        for (Method method : methods) {
-            PathParam uriParam = method.getAnnotation(PathParam.class);
-            String uriParamName = uriParam.value();
-            if(attributes.containsKey(uriParamName)) {
-                Object uriValue = attributes.get(uriParamName);
-                MethodUtil.invoke(method, obj, new Object[]{uriValue});
-            }
-        }
-    }
+
+	public void mapAll(Request request, Object obj, Class<?> clazz) {
+		Map<String, Object> attributes = request.getAttributes();
+
+		// TODO QueryParam,MatrixParam,HeaderParam
+		List<Method> methods = AnnotationUtils.getAnnotatedMethods(clazz,
+				PathParam.class);
+
+		for (Method method : methods) {
+			PathParam uriParam = AnnotationUtils.getMethodLevelAnnotation(method,
+					PathParam.class);
+			String uriParamName = uriParam.value();
+			if (attributes.containsKey(uriParamName)) {
+				Object uriValue = attributes.get(uriParamName);
+				MethodUtil.invoke(method, obj, new Object[] { uriValue });
+			}
+		}
+	}
 }

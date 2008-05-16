@@ -71,7 +71,7 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 
 	private String resolveClassUriPatternFrom(Class<?> componentClass) {
 
-		Path classUriTemplate = AnnotationUtils.getAnnotation(componentClass,
+		Path classUriTemplate = AnnotationUtils.getClassLevelAnnotation(componentClass,
 				Path.class);
 
 		String classUriPattern = null;
@@ -137,7 +137,7 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 			String classUriPattern, boolean isStateful) {
 
 		String httpMethodStr = getHttpMethodStringFrom(method);
-		Path methodUriTemplate = AnnotationUtils.getMethodAnnotation(method,
+		Path methodUriTemplate = AnnotationUtils.getMethodLevelAnnotation(method,
 				Path.class);
 		String uriPattern = null;
 		if (methodUriTemplate != null) {
@@ -171,7 +171,7 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 		log.debug("methodLevelProduceMime:"
 				+ method.getDeclaringClass().getSimpleName() + "#"
 				+ method.getName());
-		ProduceMime produceMime = AnnotationUtils.getMethodAnnotation(method,
+		ProduceMime produceMime = AnnotationUtils.getMethodLevelAnnotation(method,
 				ProduceMime.class);
 		if (produceMime != null) {
 			String[] mimeTypes = produceMime.value();
@@ -183,7 +183,7 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 
 	private void methodLevelConsumeMime(Method method,
 			SeasarResourceFinder finder) {
-		ConsumeMime consumeMime = AnnotationUtils.getMethodAnnotation(method,
+		ConsumeMime consumeMime = AnnotationUtils.getMethodLevelAnnotation(method,
 				ConsumeMime.class);
 		if (consumeMime != null) {
 			String[] mimeTypes = consumeMime.value();
@@ -196,18 +196,8 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 	private void classLevelProduceMime(Class<?> componentClass,
 			SeasarResourceFinder finder) {
 		if (!(finder.isProduceMime())) {
-			ProduceMime produceMime = componentClass
-					.getAnnotation(ProduceMime.class);
-
-			if (null == produceMime) {
-				for (Class<?> clazz : AnnotationUtils
-						.getInheritClasses(componentClass)) {
-					produceMime = clazz.getAnnotation(ProduceMime.class);
-					if (null != produceMime) {
-						break;
-					}
-				}
-			}
+			ProduceMime produceMime = AnnotationUtils.getClassLevelAnnotation(
+					componentClass, ProduceMime.class);
 
 			if (produceMime != null) {
 				for (String mimeType : produceMime.value()) {
@@ -220,18 +210,8 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 	private void classLevelConsumeMime(Class<?> componentClass,
 			SeasarResourceFinder finder) {
 		if (!(finder.isConsumeMime())) {
-			ConsumeMime consumeMime = componentClass
-					.getAnnotation(ConsumeMime.class);
-
-			if (null == consumeMime) {
-				for (Class<?> clazz : AnnotationUtils
-						.getInheritClasses(componentClass)) {
-					consumeMime = clazz.getAnnotation(ConsumeMime.class);
-					if (null != consumeMime) {
-						break;
-					}
-				}
-			}
+			ConsumeMime consumeMime = AnnotationUtils.getClassLevelAnnotation(
+					componentClass, ConsumeMime.class);
 
 			if (consumeMime != null) {
 				for (String mimeType : consumeMime.value()) {
@@ -244,16 +224,16 @@ public class Jsr311ComponentRegisterImpl implements Jsr311ComponentRegister {
 	private String getHttpMethodStringFrom(Method method) {
 		// XXX what happens if multiple annotations exist for one method?
 
-		if (AnnotationUtils.isAnnotationPresent(method, GET.class)) {
+		if (AnnotationUtils.isMethodLevelAnnotationPresent(method, GET.class)) {
 			return "GET";
 		}
-		if (AnnotationUtils.isAnnotationPresent(method, POST.class)) {
+		if (AnnotationUtils.isMethodLevelAnnotationPresent(method, POST.class)) {
 			return "POST";
 		}
-		if (AnnotationUtils.isAnnotationPresent(method, PUT.class)) {
+		if (AnnotationUtils.isMethodLevelAnnotationPresent(method, PUT.class)) {
 			return "PUT";
 		}
-		if (AnnotationUtils.isAnnotationPresent(method, DELETE.class)) {
+		if (AnnotationUtils.isMethodLevelAnnotationPresent(method, DELETE.class)) {
 			return "DELETE";
 		}
 		throw new IllegalStateException(
