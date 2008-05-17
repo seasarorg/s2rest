@@ -161,21 +161,16 @@ public class AnnotationUtils {
 	 * @return 自身を含む継承されているクラスの一意なリスト
 	 */
 	public static List<Class<?>> getInheritClasses(Class<?> theClass) {
-		Set<Class<?>> set = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> sets = new LinkedHashSet<Class<?>>();
 		Class<?> current = theClass;
 
 		while (current != null && !isObjectClass(current)) {
-			set.add(current);
-			set.addAll(getInterfaces(current));
+			sets.add(current);
+			sets.addAll(getInterfaces(current));
 			current = current.getSuperclass();
 		}
 
-		ArrayList<Class<?>> results = new ArrayList<Class<?>>();
-		for (Class<?> clazz : set) {
-			results.add(clazz);
-		}
-
-		return results;
+		return new ArrayList<Class<?>>(sets);
 	}
 
 	/**
@@ -200,15 +195,14 @@ public class AnnotationUtils {
 	 * @param theClass
 	 * @return
 	 */
-	// TODO 戻すクラスの重複をなくす
 	public static List<Class<?>> getInterfaces(Class<?> theClass) {
-		ArrayList<Class<?>> results = new ArrayList<Class<?>>();
+		Set<Class<?>> sets = new LinkedHashSet<Class<?>>();
 		Class<?>[] classes = theClass.getInterfaces();
 		for (Class<?> clazz : classes) {
-			results.add(clazz);
-			results.addAll(getInterfaces(clazz));
+			sets.add(clazz);
+			sets.addAll(getInterfaces(clazz));
 		}
-		return results;
+		return new ArrayList<Class<?>>(sets);
 	}
 
 	/**

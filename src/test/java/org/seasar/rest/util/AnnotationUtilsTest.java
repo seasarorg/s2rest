@@ -45,10 +45,9 @@ public class AnnotationUtilsTest {
 
 		// Implemented Hoge & Huga
 		list = AnnotationUtils.getInterfaces(SampleClass3.class);
-		assertEquals(list.size(), 3);
+		assertEquals(list.size(), 2);
 		assertEquals(list.get(0), Hoge.class);
 		assertEquals(list.get(1), Huga.class);
-		assertEquals(list.get(2), Hoge.class);
 
 	}
 
@@ -77,7 +76,8 @@ public class AnnotationUtilsTest {
 		// SampleClass1#hogehoge has Path Annotation
 		Method method = ClassUtil.getMethod(SampleClass1.class, "hogehoge",
 				new Class[] {});
-		Path path = AnnotationUtils.getMethodLevelAnnotation(method, Path.class);
+		Path path = AnnotationUtils
+				.getMethodLevelAnnotation(method, Path.class);
 		assertNotNull(path);
 
 		// SampleClass2#hogehoge doesn't have Path Annotation
@@ -157,7 +157,8 @@ public class AnnotationUtilsTest {
 		assertNotNull(path);
 		assertEquals("Huga", AnnotationUtils.getValue(path, "value"));
 
-		get = AnnotationUtils.getClassLevelAnnotation(SampleClass3.class, GET.class);
+		get = AnnotationUtils.getClassLevelAnnotation(SampleClass3.class,
+				GET.class);
 		assertNull(get);
 
 		// Class and Interface have Path Annotation
